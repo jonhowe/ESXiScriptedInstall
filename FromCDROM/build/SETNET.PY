@@ -1,15 +1,17 @@
-#!/usr/bin/python
-import os, commands, csv, subprocess
+import os, csv, subprocess
 
-MAC=subprocess.check_output("esxcli network ip interface list |grep MAC",shell=True)
+CSVPATH = '/HOSTS.CSV'
 
+MAC=subprocess.check_output("esxcli network ip interface list |grep MAC | cut -d ' ' -f 6",shell=True)
+                                                                                                                                                                                                                                                                                    
 MACADDR = MAC.split()
-
-with open('/vmfs/volumes/datastore1/HOSTS.CSV', 'rb') as f:
-        reader = csv.reader(f)
-        for row in reader:
-                if MACADDR[2] == row[1]:
-                        os.system("esxcli system hostname set --fqdn=" + row[0])
-                        os.system("esxcli network ip interface ipv4 set --interface-name=vmk0 --ipv4=" + row[2] + " --netmask=" + row[3] + " --type=static")
-print "End of loop"
-
+print("MAC Addresses:")
+print(MACADDR)
+with open(CSVPATH, 'rt') as csvFile:
+        csvReader = csv.reader(csvFile)
+        for csvRow in csvReader:
+                if ((MACADDR[0]).decode('utf-8')) == csvRow[1]:
+                        print("Running: esxcli system hostname set --fqdn=" + csvRow[0])
+                        print("running: esxcli network ip interface ipv4 set --interface-name=vmk0 --ipv4=" + csvRow[2] + " --netmask=" + csvRow[3] + " --type=static --gateway=" + csvRow[4])
+                        os.system("esxcli system hostname set --fqdn=" + csvRow[0])
+                        os.system("esxcli network ip interface ipv4 set --interface-name=vmk0 --ipv4=" + csvRow[2] + " --netmask=" + csvRow[3] + " --type=static --gateway=" + csvRow[4])
