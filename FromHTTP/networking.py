@@ -16,6 +16,8 @@ with open(CSVPATH, 'rt') as csvFile:
                         print("running: esxcli network ip interface ipv4 set --interface-name=vmk0 --ipv4=" + csvRow[2] + " --netmask=" + csvRow[3] + " --type=static --gateway=" + csvRow[4])
                         os.system("esxcli system hostname set --fqdn=" + csvRow[0])
                         os.system("esxcli network ip interface ipv4 set --interface-name=vmk0 --ipv4=" + csvRow[2] + " --netmask=" + csvRow[3] + " --type=static --gateway=" + csvRow[4])
+                        os.system("esxcfg-route " + csvRow[4])
+                        os.system("esxcfg-vswitch -p 'Management Network' -v " + csvRow[5] + " vSwitch0")
                         
 print("End of loop")
 print("Hostname is: ")
